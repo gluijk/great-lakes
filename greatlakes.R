@@ -80,7 +80,7 @@ lakes
 plot(lakes)
 
 
-# CROP raster to area of interest (in kms)
+# CROP raster to area of interest (in km)
 cropdef=ext(-675, 650, 4800, 5800)
 lakes=crop(x=lakes, y=cropdef, threads=TRUE)
 lakes
@@ -115,7 +115,7 @@ depths=c(179, 74, 0)
 for (i in 1:length(lakes)) {
     # Calculate solid map contour
     solid=DEM
-
+    
     if (depths[i]<=0) {
         solid[solid>=depths[i]]=1  # set areas to 1 (land)
         solid[solid<depths[i]]=0  # set areas to 0 (water)
@@ -124,27 +124,27 @@ for (i in 1:length(lakes)) {
         solid[solid>=depths[i]]=1  # set areas to 1 (land)
     }
     
-    writePNG(solid, paste0("mapsolid_", lakes[i], ".png")
-    
-    
-    # Calculate outline map from solid map
-    outline=solid*0
-    # 1 pixel thickness outline
-    outline[2:(DIMY-1), 2:(DIMX-1)]=
-        abs(solid[1:(DIMY-2), 2:(DIMX-1)] -
-            solid[2:(DIMY-1), 2:(DIMX-1)]) +
-        abs(solid[2:(DIMY-1), 1:(DIMX-2)] -
-            solid[2:(DIMY-1), 2:(DIMX-1)])
-    # increase to 2 pixel thickness outline
-    outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
-        outline[1:(DIMY-2), 2:(DIMX-1)]+outline[2:(DIMY-1), 3:(DIMX-0)]
-    # increase to 3 pixel thickness outline
-    outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
+    writePNG(solid, paste0("mapsolid_", lakes[i], ".png"))
+             
+             
+     # Calculate outline map from solid map
+     outline=solid*0
+     # 1 pixel thickness outline
+     outline[2:(DIMY-1), 2:(DIMX-1)]=
+         abs(solid[1:(DIMY-2), 2:(DIMX-1)] -
+                 solid[2:(DIMY-1), 2:(DIMX-1)]) +
+         abs(solid[2:(DIMY-1), 1:(DIMX-2)] -
+                 solid[2:(DIMY-1), 2:(DIMX-1)])
+     # increase to 2 pixel thickness outline
+     outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
+         outline[1:(DIMY-2), 2:(DIMX-1)]+outline[2:(DIMY-1), 3:(DIMX-0)]
+     # increase to 3 pixel thickness outline
+     outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
          outline[1:(DIMY-2), 2:(DIMX-1)]+outline[3:(DIMY-0), 2:(DIMX-1)]+
          outline[2:(DIMY-1), 1:(DIMX-2)]+outline[2:(DIMY-1), 3:(DIMX-0)]
-    outline[outline!=0]=1
-
-    writePNG(outline, paste0("mapoutline_", lakes[i], ".png")
+     outline[outline!=0]=1
+     
+     writePNG(outline, paste0("mapoutline_", lakes[i], ".png"))
 }
 
 
