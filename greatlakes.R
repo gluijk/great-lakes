@@ -106,41 +106,46 @@ DIMX=ncol(DEM)
 
 # 2. PROCESS MATRIX TO OBTAIN MAP CONTOURS AND HILLSHADE
 
-# Calculate solid map contour
-solid=DEM
-
-# Sea level contours
-solid[solid>=0]=1  # set >=0 areas to 1 (land)
-solid[solid<0]=0  # set <0 areas to 0 (water)
-
 # Superior, Michigan, Huron, Erie contours: ~179m above sea level
-solid[solid<179]=0  # set <179 areas to 0 (water)
-solid[solid>=179]=1  # set >=179 areas to 1 (land)
-
 # Ontario contours: 74m above sea level
-solid[solid<74]=0  # set <74 areas to 0 (water)
-solid[solid>=74]=1  # set >=74 areas to 1 (land)
+# Sea level contours: 0m above sea level
+lakes=c('currentmainlakes', 'currentontariolake', 'simulated')
+depths=c(179, 74, 0)
 
-writePNG(solid, "mapsolid.png")
+for (i in 1:length(lakes)) {
+    # Calculate solid map contour
+    solid=DEM
 
+    if (depths[i]<=0) {
+        solid[solid>=depths[i]]=1  # set areas to 1 (land)
+        solid[solid<depths[i]]=0  # set areas to 0 (water)
+    } else {
+        solid[solid<depths[i]]=0  # set areas to 0 (water) 
+        solid[solid>=depths[i]]=1  # set areas to 1 (land)
+    }
+    
+    writePNG(solid, paste0("mapsolid_", lakes[i], ".png")
+    
+    
+    # Calculate outline map from solid map
+    outline=solid*0
+    # 1 pixel thickness outline
+    outline[2:(DIMY-1), 2:(DIMX-1)]=
+        abs(solid[1:(DIMY-2), 2:(DIMX-1)] -
+            solid[2:(DIMY-1), 2:(DIMX-1)]) +
+        abs(solid[2:(DIMY-1), 1:(DIMX-2)] -
+            solid[2:(DIMY-1), 2:(DIMX-1)])
+    # increase to 2 pixel thickness outline
+    outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
+        outline[1:(DIMY-2), 2:(DIMX-1)]+outline[2:(DIMY-1), 3:(DIMX-0)]
+    # increase to 3 pixel thickness outline
+    outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
+         outline[1:(DIMY-2), 2:(DIMX-1)]+outline[3:(DIMY-0), 2:(DIMX-1)]+
+         outline[2:(DIMY-1), 1:(DIMX-2)]+outline[2:(DIMY-1), 3:(DIMX-0)]
+    outline[outline!=0]=1
 
-# Calculate outline map from solid map
-outline=solid*0
-# 1 pixel thickness outline
-outline[2:(DIMY-1), 2:(DIMX-1)]=
-    abs(solid[1:(DIMY-2), 2:(DIMX-1)] -
-        solid[2:(DIMY-1), 2:(DIMX-1)]) +
-    abs(solid[2:(DIMY-1), 1:(DIMX-2)] -
-        solid[2:(DIMY-1), 2:(DIMX-1)])
-# increase to 2 pixel thickness outline
-outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
-    outline[1:(DIMY-2), 2:(DIMX-1)]+outline[2:(DIMY-1), 3:(DIMX-0)]
-# increase to 3 pixel thickness outline
-outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
-     outline[1:(DIMY-2), 2:(DIMX-1)]+outline[3:(DIMY-0), 2:(DIMX-1)]+
-     outline[2:(DIMY-1), 1:(DIMX-2)]+outline[2:(DIMY-1), 3:(DIMX-0)]
-outline[outline!=0]=1
-writePNG(outline, "mapoutline.png")
+    writePNG(outline, paste0("mapoutline_", lakes[i], ".png")
+}
 
 
 # Calculate grayscale hillshade
