@@ -1,6 +1,6 @@
 # Lake Michigan Horizons
 # www.overfitting.net
-# https://www.overfitting.net/2024/01/conectando-los-grandes-lagos-al-mar-con.html
+# https://www.overfitting.net/2024/01/los-horizontes-del-lago-michigan-con-r.html
 
 
 library(terra)  # read GeoTIFF, reprojection, crop and resample
@@ -22,7 +22,7 @@ lakes=rast("geotiff_northamerica.tif")
 lakes
 plot(lakes)
 
-# CROP Great Lakes (in long/lant degrees)
+# CROP Great Lakes (in long/lat degrees)
 cropdef=ext(-100, -70, 38, 52)
 lakes=crop(x=lakes, y=cropdef, threads=TRUE)
 lakes
