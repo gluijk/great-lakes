@@ -64,7 +64,7 @@ lakes=rast("geotiff_northamerica.tif")
 lakes
 plot(lakes)
 
-# CROP Great Lakes (in long/lant degrees)
+# CROP Great Lakes (in long/lat degrees)
 cropdef=ext(-100, -70, 38, 52)
 lakes=crop(x=lakes, y=cropdef, threads=TRUE)
 lakes
